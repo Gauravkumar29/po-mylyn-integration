@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.repositories">
+      <connectorCore
+            class="com.project_open.mylyn.core.ProjectOpenRepositoryConnector"
+            id="projectopen"
+            name="]project-open[">
+      </connectorCore>
+      <connectorUi
+            brandingIcon="icons/eview16/projectopen-icon.png"
+            class="com.project_open.mylyn.ui.ProjectOpenConnectorUi"
+            id="projectopen"
+            name="]project-open["
+            overlayIcon="icons/eview16/projectopen-overlay-icon.png">
+      </connectorUi>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.editors">
+      <pageFactory
+            class="com.project_open.mylyn.ui.editor.TicketEditorPageFactory"
+            id="com.project_open.mylyn.ui.pageFactory">
+      </pageFactory>
+   </extension>
+
+</plugin>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ]project-open[ Mylyn Test
+Bundle-SymbolicName: com.project_open.mylyn.tests
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: ]project-open[
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: com.project_open.mylyn.core,
+ org.junit;bundle-version="3.8.2",
+ org.apache.commons.lang;bundle-version="2.3.0"

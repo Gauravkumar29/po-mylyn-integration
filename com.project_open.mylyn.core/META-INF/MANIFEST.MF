@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ]project-open[ Mylyn Core
+Bundle-SymbolicName: com.project_open.mylyn.core;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: com.project_open.mylyn.core.ProjectOpenCorePlugin
+Bundle-Vendor: ]project-open[
+Bundle-ClassPath: lib/json-20080701.jar,
+ lib/cloning-1.4.jar,
+ lib/objenesis-1.1.jar,
+ .
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.mylyn.tasks.core;bundle-version="[3.2.0,4.0.0)",
+ org.eclipse.mylyn.commons.net;bundle-version="[3.2.0,4.0.0)",
+ org.eclipse.mylyn.commons.core;bundle-version="[3.2.0,4.0.0)",
+ org.eclipse.core.resources,
+ org.apache.commons.io;bundle-version="1.4.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Export-Package: com.project_open.mylyn.core,
+ com.project_open.mylyn.core.client,
+ com.project_open.mylyn.core.exception,
+ com.project_open.mylyn.core.model
