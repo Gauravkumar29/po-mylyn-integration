@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -12,6 +14,7 @@ import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.util.EncodingUtil;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.commons.net.AbstractWebLocation;
@@ -126,7 +129,10 @@ public class ProjectOpenHttpClient {
 		HostConfiguration hostConfiguration = WebUtil.createHostConfiguration(
 				httpClient, location, monitor);
 		try {
-			request.setDoAuthentication(true);
+			String authString = location.getCredentials(AuthenticationType.REPOSITORY).getUserName() + ":" + location.getCredentials(AuthenticationType.REPOSITORY).getPassword();
+			request.setRequestHeader(
+		               new Header("Authorization",
+		                          "Basic " + new String(Base64.encodeBase64(authString.getBytes()))));
 			return WebUtil.execute(httpClient, hostConfiguration, request,
 					monitor);
 		} catch (IOException e) {

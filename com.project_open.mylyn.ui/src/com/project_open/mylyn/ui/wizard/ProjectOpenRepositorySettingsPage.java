@@ -49,7 +49,7 @@ public class ProjectOpenRepositorySettingsPage extends AbstractRepositorySetting
         setNeedsEncoding(false);
         setNeedsTimeZone(false);
         setNeedsValidation(true);
-        setNeedsHttpAuth(true);
+        setNeedsHttpAuth(false);
     }
 
     @Override
