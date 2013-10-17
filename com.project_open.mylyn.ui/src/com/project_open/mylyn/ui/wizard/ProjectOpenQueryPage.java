@@ -4,6 +4,7 @@ import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import com.project_open.mylyn.core.ProjectOpenCorePlugin;
@@ -16,20 +17,12 @@ import com.project_open.mylyn.core.client.ProjectOpenClient;
  */
 public class ProjectOpenQueryPage extends AbstractRepositoryQueryPage {
 
-    private static final String TITLE = "Enter query parameters";
-
-    private static final String DESCRIPTION = "Select options to create a query";
-
-    private static final String TITLE_QUERY_TITLE = "Query title";
+    private static final String TITLE = "Queries";
 
     private ProjectOpenClient client;
 
-    private IRepositoryQuery query;
-
     public ProjectOpenQueryPage(TaskRepository taskRepository, IRepositoryQuery query) {
         super(TITLE, taskRepository, query);
-
-        this.query = query;
 
         ProjectOpenRepositoryConnector connector = (ProjectOpenRepositoryConnector) TasksUi
                 .getRepositoryManager().getRepositoryConnector(
@@ -37,7 +30,6 @@ public class ProjectOpenQueryPage extends AbstractRepositoryQueryPage {
         client = connector.getClientManager().getClient(getTaskRepository());
 
         setTitle(TITLE);
-        setDescription(DESCRIPTION);
     }
 
     public ProjectOpenQueryPage(TaskRepository repository) {
@@ -45,14 +37,13 @@ public class ProjectOpenQueryPage extends AbstractRepositoryQueryPage {
     }
 
 	public void createControl(Composite parent) {
-		// TODO Auto-generated method stub
-		
+        Composite control = new Composite(parent, SWT.NONE);
+        setControl(control);
 	}
 
 	@Override
 	public String getQueryTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Default";
 	}
 
 	@Override
