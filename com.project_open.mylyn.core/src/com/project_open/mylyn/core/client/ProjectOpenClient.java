@@ -21,8 +21,6 @@ public interface ProjectOpenClient {
 
 	void newTicket(Ticket ticket, NullProgressMonitor nullProgressMonitor) throws ProjectOpenException;
 
-	ProjectOpenClient getClient(TaskRepository repository);
-
 	void updateTicket(Ticket ticket, IProgressMonitor monitor) throws ProjectOpenException;
 
 	Ticket getTicket(int intValue, IProgressMonitor monitor) throws ProjectOpenException;

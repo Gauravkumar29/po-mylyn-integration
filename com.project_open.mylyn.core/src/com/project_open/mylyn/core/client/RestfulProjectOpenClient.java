@@ -61,11 +61,6 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 		
 	}
 
-	public ProjectOpenClient getClient(TaskRepository repository) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public void updateTicket(Ticket ticket, IProgressMonitor monitor)
 			throws ProjectOpenException {
 		// TODO Auto-generated method stub
