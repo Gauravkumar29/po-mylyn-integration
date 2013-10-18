@@ -131,7 +131,6 @@ public class ProjectOpenRepositoryConnector extends AbstractRepositoryConnector 
         ProjectOpenClient client = getClientManager().getClient(repository);
 
         try {
-            client.updateRepositoryData(false, monitor);
             client.performQuery(repository, query, collector, monitor);
         } catch (CoreException e) {
             return e.getStatus();
@@ -141,9 +140,10 @@ public class ProjectOpenRepositoryConnector extends AbstractRepositoryConnector 
     }
 
     @Override
-    public void updateRepositoryConfiguration(TaskRepository taskRepository,
+    public void updateRepositoryConfiguration(TaskRepository repository,
             IProgressMonitor monitor) throws CoreException {
-        // ignore
+    	ProjectOpenClient client = getClientManager().getClient(repository);
+    	client.updateRepositoryData(true, monitor);
     }
 
     @Override

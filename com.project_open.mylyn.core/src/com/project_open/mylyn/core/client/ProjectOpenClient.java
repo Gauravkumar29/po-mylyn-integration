@@ -28,7 +28,7 @@ public interface ProjectOpenClient {
 	TaskData getTaskData(TaskRepository taskRepository, String taskId,
 			IProgressMonitor monitor);
 
-	void updateRepositoryData(boolean b, IProgressMonitor monitor);
+	void updateRepositoryData(boolean force, IProgressMonitor monitor);
 
 	void performQuery(TaskRepository repository, IRepositoryQuery query,
 			TaskDataCollector collector, IProgressMonitor monitor) throws CoreException;
