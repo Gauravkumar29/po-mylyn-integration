@@ -49,5 +49,10 @@ public class User implements Marshallable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }

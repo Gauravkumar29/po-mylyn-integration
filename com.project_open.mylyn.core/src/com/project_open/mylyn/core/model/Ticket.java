@@ -17,7 +17,7 @@ public class Ticket extends Project {
 	private int typeId;
 	private int assigneeId;
 	private int customerContactId;
-	private String description;
+	private String description = "";
 	private Date customerDeadline;
 	private Date creationDate;
 	private Date lastModifiedDate;
@@ -140,8 +140,22 @@ public class Ticket extends Project {
         }
 	}
 	
-	public void toXml() {
-		
+	public String toXml() {
+		int ticketStatusId = statusId == 0 ? 30000 : statusId;
+		int ticketTypeId = typeId == 0 ? 30110 : typeId;
+		String xml = "<?xml version='1.0'?>"
+				+ "<im_ticket><parent_id>"
+				+ getTrackerId()
+				+ "</parent_id><ticket_type_id>"
+				+ ticketTypeId
+				+ "</ticket_type_id><ticket_status_id>"
+				+ ticketStatusId
+				+ "</ticket_status_id><project_name>"
+				+ getName()
+				+ "</project_name><ticket_description>"
+				+ getDescription()
+				+ "</ticket_description></im_ticket>";
+		return xml;
 	}
 
 }

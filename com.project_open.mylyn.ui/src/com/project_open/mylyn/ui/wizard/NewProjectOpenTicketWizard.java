@@ -1,6 +1,7 @@
 package com.project_open.mylyn.ui.wizard;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.mylyn.internal.tasks.ui.util.TasksUiInternal;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.swt.widgets.Composite;
@@ -8,6 +9,7 @@ import org.eclipse.ui.INewWizard;
 
 import com.project_open.mylyn.core.client.ProjectOpenClient;
 import com.project_open.mylyn.core.exception.ProjectOpenException;
+import com.project_open.mylyn.core.model.Ticket;
 
 /**
  * @author Markus Knittig
@@ -35,7 +37,7 @@ public class NewProjectOpenTicketWizard extends NewTaskWizard implements INewWiz
         super.createPageControls(pageContainer);
     }
 
-    @Override
+	@Override
     public boolean performFinish() {
         try {
             client.newTicket(newTicketWizardPage.getTicket(), new NullProgressMonitor());

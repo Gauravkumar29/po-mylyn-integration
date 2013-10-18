@@ -1,6 +1,8 @@
 package com.project_open.mylyn.core.client;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +15,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.util.EncodingUtil;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.commons.net.AbstractWebLocation;
@@ -88,15 +90,21 @@ public class ProjectOpenHttpClient {
 		return executeMethod(getRequest, monitor);
 	}
 
-	public String executePost(String url, IProgressMonitor monitor)
+	public String executePost(String url, String body, IProgressMonitor monitor)
 			throws ProjectOpenException {
-		return executePost(url, new HashMap<String, String>(), monitor);
+		return executePost(url, body, new HashMap<String, String>(), monitor);
 	}
 
-	public String executePost(String url, Map<String, String> parameters,
+	public String executePost(String url, String body, Map<String, String> parameters,
 			IProgressMonitor monitor) throws ProjectOpenException {
 		PostMethod postRequest = new PostMethod(ProjectOpenUtil.stripSlash(location.getUrl())
 				+ url);
+		
+		try {
+			postRequest.setRequestEntity(new StringRequestEntity(body, "text/xml", "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
 		for (String key : parameters.keySet()) {
 			postRequest.setParameter(key, parameters.get(key));

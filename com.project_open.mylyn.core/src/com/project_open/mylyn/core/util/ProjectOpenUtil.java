@@ -113,7 +113,7 @@ public final class ProjectOpenUtil {
         return result;
     }
 
-    public static List<String> toStringList(List<?> list) {
+    public static List<String> toStringList(List<?> list) {  	
         List<String> result = new ArrayList<String>();
         for (Object string : list) {
             result.add(string.toString());

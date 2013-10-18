@@ -1,13 +1,12 @@
 package com.project_open.mylyn.core.client;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AbstractWebLocation;
@@ -16,7 +15,6 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
-import org.review_board.ereviewboard.core.model.ReviewRequest;
 
 import com.project_open.mylyn.core.ProjectOpenCorePlugin;
 import com.project_open.mylyn.core.ProjectOpenTaskMapper;
@@ -70,34 +68,34 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
         }
 	}
 
-	public Ticket newTicket(Ticket ticket, NullProgressMonitor nullProgressMonitor)
+	public Ticket newTicket(Ticket ticket, IProgressMonitor monitor)
 			throws ProjectOpenException {
-        /*Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("repository_id", String.valueOf(ticket.getRepository().getId()));
-        if (ticket.getChangeNumber() != null) {
-            parameters.put("changenum", String.valueOf(ticket.getChangeNumber()));
-        }
-
-        ReviewRequest newReviewRequest = reviewboardReader.readReviewRequest(httpClient.executePost(
-                "/api/json/reviewrequests/new/", parameters, monitor));
-        ticket.setId(newReviewRequest.getId());
-        ticket.setTimeAdded(newReviewRequest.getTimeAdded());
-        ticket.setLastUpdated(newReviewRequest.getLastUpdated());
-        ticket.setSubmitter(newReviewRequest.getSubmitter());*/
-
-        // TODO
-        // ticket.getTargetPeople().add(newReviewRequest.getSubmitter());
-        // ticket.setSummary("Test");
-        // ticket.setDescription("Test");
-        // updateReviewRequest(ticket);
-
+		//XXX Should be asynchronously
+		String response = httpClient.executePost(
+				"/intranet-rest/im_ticket", ticket.toXml(), monitor);
+		
+		Pattern regex = Pattern.compile("<object_id.*?>(.*?)</object_id>", Pattern.DOTALL);
+		Matcher matcher = regex.matcher(response);
+		if (matcher.find()) {
+			int ticketId = Integer.valueOf(matcher.group(1));
+			Ticket newTicket = getTicket(ticketId, monitor);
+			ticket.setId(newTicket.getId());
+			ticket.setName(newTicket.getName());
+			ticket.setNummer(newTicket.getNummer());
+			ticket.setCustomerContactId(newTicket.getCustomerContactId());
+			ticket.setDescription(newTicket.getDescription());
+			ticket.setStatusId(newTicket.getStatusId());
+			ticket.setTypeId(newTicket.getTypeId());
+			ticket.setCreationDate(newTicket.getCreationDate());
+			ticket.setLastModifiedDate(newTicket.getLastModifiedDate());
+		}
+		
         return ticket;
 	}
 
 	public void updateTicket(Ticket ticket, IProgressMonitor monitor)
 			throws ProjectOpenException {
-		// TODO Auto-generated method stub
-		
+		newTicket(ticket, monitor);
 	}
 
 	public Ticket getTicket(int id, IProgressMonitor monitor)
@@ -119,7 +117,7 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 	}
 
     public List<User> getUsers(IProgressMonitor monitor) throws ProjectOpenException {
-        return projectOpenReader.readUsers(httpClient.executeGet("/intranet-rest/im_user?format=json", monitor));
+        return projectOpenReader.readUsers(httpClient.executeGet("/intranet-rest/user?format=json", monitor));
     }
     
     public List<Company> getCompanies(IProgressMonitor monitor) throws ProjectOpenException {

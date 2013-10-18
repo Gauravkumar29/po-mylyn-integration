@@ -19,7 +19,7 @@ public interface ProjectOpenClient {
 
     boolean validCredentials(String username, String password, IProgressMonitor monitor);
 
-	Ticket newTicket(Ticket ticket, NullProgressMonitor nullProgressMonitor) throws ProjectOpenException;
+	Ticket newTicket(Ticket ticket, IProgressMonitor monitor) throws ProjectOpenException;
 
 	void updateTicket(Ticket ticket, IProgressMonitor monitor) throws ProjectOpenException;
 

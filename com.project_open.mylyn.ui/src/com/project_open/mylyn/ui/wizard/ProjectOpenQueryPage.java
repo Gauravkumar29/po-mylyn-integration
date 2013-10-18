@@ -17,17 +17,10 @@ import com.project_open.mylyn.core.client.ProjectOpenClient;
  */
 public class ProjectOpenQueryPage extends AbstractRepositoryQueryPage {
 
-    private static final String TITLE = "Queries";
-
-    private ProjectOpenClient client;
+    private static final String TITLE = "Create default query";
 
     public ProjectOpenQueryPage(TaskRepository taskRepository, IRepositoryQuery query) {
         super(TITLE, taskRepository, query);
-
-        ProjectOpenRepositoryConnector connector = (ProjectOpenRepositoryConnector) TasksUi
-                .getRepositoryManager().getRepositoryConnector(
-                        ProjectOpenCorePlugin.REPOSITORY_KIND);
-        client = connector.getClientManager().getClient(getTaskRepository());
 
         setTitle(TITLE);
     }
@@ -43,13 +36,12 @@ public class ProjectOpenQueryPage extends AbstractRepositoryQueryPage {
 
 	@Override
 	public String getQueryTitle() {
-		return "Default";
+		return "All Open Tickets";
 	}
 
 	@Override
 	public void applyTo(IRepositoryQuery query) {
-		// TODO Auto-generated method stub
-		
+		query.setSummary(getQueryTitle());
 	}
 
 }

@@ -1,0 +1,12 @@
+
+<?xml version='1.0'?>
+<im_ticket>
+<company_id href="http://po40dev.project-open.net/intranet-rest/im_company/11247">11247</company_id>
+<ticket_type_id href="http://po40dev.project-open.net/intranet-rest/im_category/30114">30110</ticket_type_id>
+<company_contact_id></company_contact_id>
+<ticket_assignee_id></ticket_assignee_id>
+<ticket_status_id href="http://po40dev.project-open.net/intranet-rest/im_category/30001">30000</ticket_status_id>
+<object_name>Resolution Time Test - Simple2</object_name>
+<ticket_customer_contact_id href="http://po40dev.project-open.net/intranet-rest/user/9376">9376</ticket_customer_contact_id>
+<ticket_description>asdfasdfasdf</ticket_description>
+</im_ticket>

@@ -9,11 +9,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.mylyn.tasks.core.ITask;
-import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
-import org.eclipse.mylyn.tasks.ui.editors.TaskFormPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,7 +31,7 @@ import com.project_open.mylyn.ui.ProjectOpenUiPlugin;
  * @author Markus Knittig
  *
  */
-public class TicketEditorPage extends TaskFormPage {
+public class TicketEditorPage extends AbstractTaskEditorPage {
 
     private TaskEditor editor;
     private ScrolledForm form;
@@ -47,7 +44,7 @@ public class TicketEditorPage extends TaskFormPage {
     private ProjectOpenClient client;
 
     public TicketEditorPage(TaskEditor editor, String title) {
-        super(editor, ProjectOpenCorePlugin.REPOSITORY_KIND, title);
+        super(editor, ProjectOpenCorePlugin.REPOSITORY_KIND);
         this.editor = editor;
         parts = new ArrayList<AbstractFormPagePart>();
 
@@ -57,26 +54,7 @@ public class TicketEditorPage extends TaskFormPage {
     }
 
     @Override
-    public TaskEditor getEditor() {
-        return (TaskEditor) super.getEditor();
-    }
-
-    private ITask getTask() {
-        return getEditor().getTaskEditorInput().getTask();
-    }
-
-    private TaskRepository getTaskRepository() {
-        return getEditor().getTaskEditorInput().getTaskRepository();
-    }
-
-    @Override
-    protected void fillToolBar(IToolBarManager toolBarManager) {
-        // TODO Auto-generated method stub
-        super.fillToolBar(toolBarManager);
-    }
-
-    @Override
-    protected void createFormContent(IManagedForm managedForm) {
+    public void createFormContent(IManagedForm managedForm) {
         super.createFormContent(managedForm);
         form = managedForm.getForm();
         toolkit = managedForm.getToolkit();
