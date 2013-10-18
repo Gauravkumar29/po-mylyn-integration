@@ -119,10 +119,10 @@ public class TicketEditorPage extends TaskFormPage {
     }
 
     private void downloadTicketAndRefresh() {
-        Job job = new Job(NLS.bind("Retrieving review request {0}...", getTask().getTaskId())) {
+        Job job = new Job(NLS.bind("Retrieving ticket {0}...", getTask().getTaskId())) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                monitor.subTask("Retrieving review request");
+                monitor.subTask("Retrieving ticket");
                 try {
                     ticket = client.getTicket(Integer.valueOf(getTask().getTaskId()).intValue(), monitor);
                 } catch (Exception e) {

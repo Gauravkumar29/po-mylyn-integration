@@ -20,4 +20,8 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.project_open.mylyn.core,
  com.project_open.mylyn.core.client,
  com.project_open.mylyn.core.exception,
- com.project_open.mylyn.core.model
+ com.project_open.mylyn.core.model,
+ com.project_open.mylyn.core.util
+Import-Package: com.rits.cloning,
+ org.json,
+ org.review_board.ereviewboard.core.model

@@ -20,6 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import com.project_open.mylyn.core.client.ProjectOpenClient;
 import com.project_open.mylyn.core.exception.ProjectOpenException;
 import com.project_open.mylyn.core.model.Ticket;
+import com.project_open.mylyn.core.util.ProjectOpenUtil;
 
 /**
  * @author Markus Knittig
@@ -30,24 +31,15 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
     private Composite parentComposite;
     private FormToolkit toolkit;
 
-    private Label sumbitterLabel;
-    private Label reviewersLabel;
-    private Text branchText;
-    private Text groupsText;
-    private Text bugsText;
-    private Text peopleText;
-    private Label changeNumLabel;
-    private Label repositoryLabel;
     private Text descriptionText;
-    private Text testingDoneText;
 
-    private Ticket reviewRequest;
+    private Ticket ticket;
     private ProjectOpenClient client;
     private TicketEditorHeaderPart headerPart;
 
-    public TicketEditorAttributesPart(Ticket reviewRequest, ProjectOpenClient client,
+    public TicketEditorAttributesPart(Ticket ticket, ProjectOpenClient client,
             TicketEditorHeaderPart headerPart) {
-        this.reviewRequest = reviewRequest;
+        this.ticket = ticket;
         this.client = client;
         this.headerPart = headerPart;
     }
@@ -69,34 +61,8 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
         expandableComposite.setClient(parentComposite);
         expandableComposite.setExpanded(true);
 
-        createAttributeName("Submitter:");
-        sumbitterLabel = createLabelAttribute();
-
-        createAttributeName("Reviewers").setForeground(
-                parentComposite.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-        reviewersLabel = createLabelAttribute();
-
-        createAttributeName("Branch:");
-        branchText = createTextAttribute();
-
-        createAttributeName("Groups");
-        groupsText = createTextAttribute();
-
-        createAttributeName("Bugs closed:");
-        bugsText = createTextAttribute();
-
-        createAttributeName("People:");
-        peopleText = createTextAttribute();
-
-        createAttributeName("Change number:");
-        changeNumLabel = createLabelAttribute();
-
-        createAttributeName("Repository:");
-        repositoryLabel = createLabelAttribute();
-
         descriptionText = createMultiTextAttribute("Description:");
-        testingDoneText = createMultiTextAttribute("Testing done:");
-
+        
         Button updateAttributesButton = toolkit.createButton(parentComposite,
                 "Update attributes", SWT.NONE);
         updateAttributesButton.addSelectionListener(new SelectionAdapter() {
@@ -108,19 +74,19 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
         new Label(expandableComposite, SWT.NONE);
         new Label(expandableComposite, SWT.NONE);
 
-        setInput(reviewRequest);
+        setInput(ticket);
 
         return expandableComposite;
     }
 
     private void updateTicket() {
-        new Job("Update Review Request") {
+        new Job("Update Ticket") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    Ticket reviewRequest = getInput();
-                    client.updateTicket(reviewRequest, monitor);
-                    setInput(reviewRequest);
+                    Ticket ticket = getInput();
+                    client.updateTicket(ticket, monitor);
+                    setInput(ticket);
                 } catch (ProjectOpenException e) {
                     throw new RuntimeException(e);
                 }
@@ -158,38 +124,18 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
         return text;
     }
 
-    public void setInput(Ticket reviewRequest) {
-        /*sumbitterLabel.setText(reviewRequest.getSubmitter().getUsername());
-        branchText.setText(reviewRequest.getBranch());
-
-        bugsText.setText(reviewRequest.getBugsClosedText());
-        groupsText.setText(reviewRequest.getTargetGroupsText());
-        peopleText.setText(reviewRequest.getTargetPeopleText());
-        changeNumLabel.setText(reviewRequest.getChangeNumberText());
-        repositoryLabel.setText(reviewRequest.getRepository().getName());
-        descriptionText.setText(reviewRequest.getDescription());
-        testingDoneText.setText(reviewRequest.getTestingDone());
-
-        headerPart.setSummary(reviewRequest.getSummary());*/
+    public void setInput(Ticket ticket) {
+    	descriptionText.setText(ticket.getDescription());
+        headerPart.setSummary(ticket.getName());
     }
 
     public Ticket getInput() {
-        /*Ticket reviewRequest = ProjectOpenUtil.cloneEntity(this.reviewRequest);
+        Ticket ticket = ProjectOpenUtil.cloneEntity(this.ticket);
 
-        reviewRequest.setBugsClosedText(bugsText.getText());
-        reviewRequest.setTargetGroups(client.getClientData().marshallTargetGroups(
-                groupsText.getText()));
-        reviewRequest.setTargetPeople(client.getClientData().marshallTargetPeople(
-                peopleText.getText()));
+        ticket.setDescription(descriptionText.getText());
+        ticket.setName(headerPart.getSummary());
 
-        reviewRequest.setBranch(branchText.getText());
-        reviewRequest.setDescription(descriptionText.getText());
-        reviewRequest.setTestingDone(testingDoneText.getText());
-
-        reviewRequest.setSummary(headerPart.getSummary());
-
-        return reviewRequest;*/
-    	return null;
+        return ticket;
     }
 
 }

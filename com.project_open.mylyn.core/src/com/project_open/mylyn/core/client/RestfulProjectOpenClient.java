@@ -1,22 +1,39 @@
 package com.project_open.mylyn.core.client;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AbstractWebLocation;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
+import org.review_board.ereviewboard.core.model.ReviewRequest;
 
+import com.project_open.mylyn.core.ProjectOpenCorePlugin;
+import com.project_open.mylyn.core.ProjectOpenTaskMapper;
 import com.project_open.mylyn.core.exception.ProjectOpenException;
+import com.project_open.mylyn.core.model.Company;
+import com.project_open.mylyn.core.model.ProjectOpenStatus;
+import com.project_open.mylyn.core.model.ProjectOpenTracker;
+import com.project_open.mylyn.core.model.ProjectOpenType;
 import com.project_open.mylyn.core.model.Ticket;
+import com.project_open.mylyn.core.model.User;
+import com.project_open.mylyn.core.util.ProjectOpenUtil;
 
 public class RestfulProjectOpenClient implements ProjectOpenClient {
 
     private final AbstractWebLocation location;
 
-    private final RestfulProjectOpenReader reviewboardReader;
+    private final RestfulProjectOpenReader projectOpenReader;
 
     private ProjectOpenClientData clientData;
 
@@ -27,7 +44,7 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
         this.location = location;
         this.clientData = clientData;
 
-        reviewboardReader = new RestfulProjectOpenReader();
+        projectOpenReader = new RestfulProjectOpenReader();
 
         httpClient = new ProjectOpenHttpClient(location, repository.getCharacterEncoding(),
                 Boolean.valueOf(repository.getProperty("selfSignedSSL")));
@@ -36,13 +53,11 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 	}
 
 	public void refreshRepositorySettings(TaskRepository repository) {
-		// TODO Auto-generated method stub
-		
+		// Nothing to do yet
 	}
 
 	public ProjectOpenClientData getClientData() {
-		// TODO Auto-generated method stub
-		return null;
+		return clientData;
 	}
 
 	public boolean validCredentials(String username, String password,
@@ -55,10 +70,28 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
         }
 	}
 
-	public void newTicket(Ticket ticket, NullProgressMonitor nullProgressMonitor)
+	public Ticket newTicket(Ticket ticket, NullProgressMonitor nullProgressMonitor)
 			throws ProjectOpenException {
-		// TODO Auto-generated method stub
-		
+        /*Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("repository_id", String.valueOf(ticket.getRepository().getId()));
+        if (ticket.getChangeNumber() != null) {
+            parameters.put("changenum", String.valueOf(ticket.getChangeNumber()));
+        }
+
+        ReviewRequest newReviewRequest = reviewboardReader.readReviewRequest(httpClient.executePost(
+                "/api/json/reviewrequests/new/", parameters, monitor));
+        ticket.setId(newReviewRequest.getId());
+        ticket.setTimeAdded(newReviewRequest.getTimeAdded());
+        ticket.setLastUpdated(newReviewRequest.getLastUpdated());
+        ticket.setSubmitter(newReviewRequest.getSubmitter());*/
+
+        // TODO
+        // ticket.getTargetPeople().add(newReviewRequest.getSubmitter());
+        // ticket.setSummary("Test");
+        // ticket.setDescription("Test");
+        // updateReviewRequest(ticket);
+
+        return ticket;
 	}
 
 	public void updateTicket(Ticket ticket, IProgressMonitor monitor)
@@ -67,28 +100,133 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 		
 	}
 
-	public Ticket getTicket(int intValue, IProgressMonitor monitor)
+	public Ticket getTicket(int id, IProgressMonitor monitor)
 			throws ProjectOpenException {
-		// TODO Auto-generated method stub
-		return null;
+		return projectOpenReader.readTicket(httpClient.executeGet("/intranet-rest/im_ticket?format=json&ticket_id="
+                + id, monitor));
 	}
 
 	public TaskData getTaskData(TaskRepository taskRepository, String taskId,
 			IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		return null;
+        TaskData taskData = new TaskData(new TaskAttributeMapper(taskRepository),
+                ProjectOpenCorePlugin.REPOSITORY_KIND, location.getUrl(), taskId);
+        
+        return taskData;
+	}
+	
+	private List<ProjectOpenTracker> getTrackers(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readTrackers(httpClient.executeGet("/intranet-rest/im_project?format=json&project_type_id=2502", monitor));
 	}
 
-	public void updateRepositoryData(boolean b, IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-		
+    public List<User> getUsers(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readUsers(httpClient.executeGet("/intranet-rest/im_user?format=json", monitor));
+    }
+    
+    public List<Company> getCompanies(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readCompanies(httpClient.executeGet("/intranet-rest/im_company?format=json", monitor));
+    }
+
+    public List<ProjectOpenStatus> getStates(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readStates(httpClient.executeGet("/intranet-rest/im_category?format=json&category_type='Intranet%20Project%20Status'", monitor));
+    }
+    
+    public List<ProjectOpenType> getTypes(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readTypes(httpClient.executeGet("/intranet-rest/im_category?format=json&category_type='Intranet%20Project%20Type'", monitor));
+    }
+
+    public List<Ticket> getTickets(IProgressMonitor monitor) throws ProjectOpenException {
+        return projectOpenReader.readTickets(
+                httpClient.executeGet("/intranet-rest/im_ticket?format=json", monitor));
+    }
+
+	public void updateRepositoryData(boolean force, IProgressMonitor monitor) {
+        if (hasRepositoryData() && !force) {
+            return;
+        }
+
+        try {
+        	monitor.subTask("Retrieving trackers");
+            clientData.setTrackers(getTrackers(monitor));
+            monitorWorked(monitor);
+        	
+        	monitor.subTask("Retrieving companies");
+            clientData.setCompanies(getCompanies(monitor));
+            monitorWorked(monitor);
+
+            monitor.subTask("Retrieving users");
+            clientData.setUsers(getUsers(monitor));
+            monitorWorked(monitor);
+
+            monitor.subTask("Retrieving states");
+            clientData.setStates(getStates(monitor));
+            monitorWorked(monitor);
+            
+            monitor.subTask("Retrieving types");
+            clientData.setTypes(getTypes(monitor));
+            monitorWorked(monitor);
+
+            clientData.lastupdate = new Date().getTime();
+        } catch (Exception e) {
+            // TODO: handle exception
+            throw new RuntimeException(e);
+        }
+
+	}
+
+	private void monitorWorked(IProgressMonitor monitor) {
+		monitor.worked(1);
+        if (monitor.isCanceled()) {
+            throw new OperationCanceledException();
+        }
+	}
+
+	private boolean hasRepositoryData() {
+        return (clientData.lastupdate != 0);
 	}
 
 	public void performQuery(TaskRepository repository, IRepositoryQuery query,
 			TaskDataCollector collector, IProgressMonitor monitor)
 			throws CoreException {
-		// TODO Auto-generated method stub
-		
+		try {
+			//TODO integrate query
+            List<Ticket> tickets = getTickets(monitor);
+            for (Ticket ticket : tickets) {
+                TaskData taskData = getTaskDataForTicket(repository, ticket);
+                collector.accept(taskData);
+            }
+        } catch (ProjectOpenException e) {
+        	ProjectOpenCorePlugin.getDefault().getLog().log(new Status(Status.INFO, ProjectOpenCorePlugin.PLUGIN_ID, Status.CANCEL, e.getMessage(), e));
+            throw new CoreException(Status.CANCEL_STATUS);
+        }
+	}
+
+	private TaskData getTaskDataForTicket(TaskRepository repository,
+			Ticket ticket) {
+        String id = String.valueOf(ticket.getId());
+        String name = ticket.getName();
+        String description = ticket.getDescription();
+        String owner = String.valueOf(ticket.getCreationUser());
+        Date creationDate = ticket.getCreationDate();
+        Date dateModified = ticket.getLastModifiedDate();
+        Date customerDeadline = ticket.getCustomerDeadline();
+        Date resolutionDate = ticket.getResolutionDate();
+        
+        TaskData taskData = new TaskData(new TaskAttributeMapper(repository),
+        		ProjectOpenCorePlugin.REPOSITORY_KIND, location.getUrl(), id);
+        taskData.setPartial(true);
+
+        ProjectOpenTaskMapper mapper = new ProjectOpenTaskMapper(taskData, true);
+        mapper.setTaskKey(id);
+        mapper.setCreationDate(creationDate);
+        mapper.setModificationDate(dateModified);
+        mapper.setSummary(name);
+        mapper.setOwner(owner);
+        mapper.setDescription(description);
+        mapper.setDueDate(customerDeadline);
+		mapper.setCompletionDate(resolutionDate);
+        mapper.setTaskUrl(ProjectOpenUtil.getTicketUrl(repository.getUrl(), id));
+
+        return taskData;
 	}
 
 }

@@ -24,6 +24,7 @@ import org.eclipse.mylyn.commons.net.Policy;
 import org.eclipse.mylyn.commons.net.WebUtil;
 
 import com.project_open.mylyn.core.exception.ProjectOpenException;
+import com.project_open.mylyn.core.util.ProjectOpenUtil;
 
 public class ProjectOpenHttpClient {
 
@@ -79,16 +80,9 @@ public class ProjectOpenHttpClient {
 				.getUserName().length() > 0);
 	}
 
-	private String stripSlash(String url) {
-		if (url.endsWith("/")) {
-			return url.substring(0, url.lastIndexOf("/"));
-		}
-		return url;
-	}
-
 	public String executeGet(String url, IProgressMonitor monitor)
 			throws ProjectOpenException {
-		GetMethod getRequest = new GetMethod(stripSlash(location.getUrl())
+		GetMethod getRequest = new GetMethod(ProjectOpenUtil.stripSlash(location.getUrl())
 				+ url);
 
 		return executeMethod(getRequest, monitor);
@@ -101,7 +95,7 @@ public class ProjectOpenHttpClient {
 
 	public String executePost(String url, Map<String, String> parameters,
 			IProgressMonitor monitor) throws ProjectOpenException {
-		PostMethod postRequest = new PostMethod(stripSlash(location.getUrl())
+		PostMethod postRequest = new PostMethod(ProjectOpenUtil.stripSlash(location.getUrl())
 				+ url);
 
 		for (String key : parameters.keySet()) {

@@ -15,7 +15,7 @@ import com.project_open.mylyn.core.ProjectOpenCorePlugin;
  */
 public class TicketEditorPageFactory extends AbstractTaskEditorPageFactory {
 
-    private static final String TITLE = "Review Request";
+    private static final String TITLE = "Ticket";
 
     @Override
     public boolean canCreatePageFor(TaskEditorInput input) {
