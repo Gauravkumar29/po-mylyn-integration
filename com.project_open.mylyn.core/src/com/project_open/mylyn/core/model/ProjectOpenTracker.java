@@ -9,6 +9,15 @@ public class ProjectOpenTracker extends Project {
 	
 	private int companyId;
 
+	public ProjectOpenTracker() {
+		// default constructor
+	}
+	
+	public ProjectOpenTracker(int trackerId, String trackerName) {
+		setId(trackerId);
+		setName(trackerName);
+	}
+
 	public int getCompanyId() {
 		return companyId;
 	}

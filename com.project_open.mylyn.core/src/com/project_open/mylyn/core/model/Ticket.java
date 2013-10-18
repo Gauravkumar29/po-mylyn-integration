@@ -12,11 +12,11 @@ public class Ticket extends Project {
 
 	private static final long serialVersionUID = 1L;
 
-	private int trackerId;
-	private int statusId;
-	private int typeId;
-	private int assigneeId;
-	private int customerContactId;
+	private ProjectOpenTracker tracker;
+	private ProjectOpenStatus status;
+	private ProjectOpenType type;
+	private User assignee;
+	private User customerContact;
 	private String description = "";
 	private Date customerDeadline;
 	private Date creationDate;
@@ -25,44 +25,45 @@ public class Ticket extends Project {
 	private Date startDate;
 	private Date resolutionDate;
 
-	public int getTrackerId() {
-		return trackerId;
+
+	public ProjectOpenTracker getTracker() {
+		return tracker;
 	}
 
-	public void setTrackerId(int trackerId) {
-		this.trackerId = trackerId;
+	public void setTracker(ProjectOpenTracker tracker) {
+		this.tracker = tracker;
 	}
 
-	public int getStatusId() {
-		return statusId;
+	public ProjectOpenStatus getStatus() {
+		return status;
 	}
 
-	public void setStatusId(int statusId) {
-		this.statusId = statusId;
+	public void setStatus(ProjectOpenStatus status) {
+		this.status = status;
 	}
 
-	public int getTypeId() {
-		return typeId;
+	public ProjectOpenType getType() {
+		return type;
 	}
 
-	public void setTypeId(int typeId) {
-		this.typeId = typeId;
+	public void setType(ProjectOpenType type) {
+		this.type = type;
 	}
 
-	public int getAssigneeId() {
-		return assigneeId;
+	public User getAssignee() {
+		return assignee;
 	}
 
-	public void setAssigneeId(int assigneeId) {
-		this.assigneeId = assigneeId;
+	public void setAssignee(User assignee) {
+		this.assignee = assignee;
 	}
 
-	public int getCustomerContactId() {
-		return customerContactId;
+	public User getCustomerContact() {
+		return customerContact;
 	}
 
-	public void setCustomerContactId(int customerContactId) {
-		this.customerContactId = customerContactId;
+	public void setCustomerContact(User customerContact) {
+		this.customerContact = customerContact;
 	}
 
 	public String getDescription() {
@@ -124,11 +125,30 @@ public class Ticket extends Project {
 	public void marshall(JSONObject jsonObject) {
 		super.marshall(jsonObject);
 		try {
-            trackerId = ProjectOpenUtil.marshallInt(jsonObject.getString("parent_id"));
-            statusId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_status_id"));
-            typeId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_type_id"));
-            assigneeId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_assignee_id"));
-            customerContactId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_customer_contact_id"));
+            int trackerId = ProjectOpenUtil.marshallInt(jsonObject.getString("parent_id"));
+            String trackerName = jsonObject.getString("parent_id_deref");
+            tracker = new ProjectOpenTracker(trackerId, trackerName);
+            
+            int statusId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_status_id"));
+            String statusName = jsonObject.getString("ticket_status_id_deref");
+            status = new ProjectOpenStatus(statusId, statusName);
+            
+            int typeId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_type_id"));
+            String typeName = jsonObject.getString("ticket_type_id_deref");
+            type = new ProjectOpenType(typeId, typeName);
+            
+            int assigneeId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_assignee_id"));
+            String assigneeName = jsonObject.getString("ticket_assignee_id_deref");
+            assignee = new User(assigneeId, assigneeName);
+            
+            int customerContactId = ProjectOpenUtil.marshallInt(jsonObject.getString("ticket_customer_contact_id"));
+            String customerContactName = jsonObject.getString("ticket_customer_contact_id_deref");
+            customerContact = new User(customerContactId, customerContactName);
+            
+            int creationUserId = ProjectOpenUtil.marshallInt(jsonObject.getString("creation_user"));
+            String creationUserName = jsonObject.getString("creation_user_deref");
+            creationUser = new User(creationUserId, creationUserName);
+            
             description = jsonObject.getString("ticket_description");
             creationDate = ProjectOpenUtil.marshallDate(jsonObject.getString("creation_date"));
             customerDeadline = ProjectOpenUtil.marshallDate(jsonObject.getString("ticket_customer_deadline"));
@@ -141,15 +161,15 @@ public class Ticket extends Project {
 	}
 	
 	public String toXml() {
-		int ticketStatusId = statusId == 0 ? 30000 : statusId;
-		int ticketTypeId = typeId == 0 ? 30110 : typeId;
+		int ticketStatusId = getStatus() == null ? 30000 : getStatus().getId();
+		int ticketTypeId = getType() == null ? 30110 : getType().getId();
 		String xml = "<?xml version='1.0'?>"
 				+ "<im_ticket><parent_id>"
-				+ getTrackerId()
+				+ getTracker().getId()
 				+ "</parent_id><ticket_type_id>"
-				+ ticketTypeId
-				+ "</ticket_type_id><ticket_status_id>"
 				+ ticketStatusId
+				+ "</ticket_type_id><ticket_status_id>"
+				+ ticketTypeId
 				+ "</ticket_status_id><project_name>"
 				+ getName()
 				+ "</project_name><ticket_description>"

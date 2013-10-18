@@ -82,10 +82,10 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 			ticket.setId(newTicket.getId());
 			ticket.setName(newTicket.getName());
 			ticket.setNummer(newTicket.getNummer());
-			ticket.setCustomerContactId(newTicket.getCustomerContactId());
+			ticket.setCustomerContact(newTicket.getCustomerContact());
 			ticket.setDescription(newTicket.getDescription());
-			ticket.setStatusId(newTicket.getStatusId());
-			ticket.setTypeId(newTicket.getTypeId());
+			ticket.setStatus(newTicket.getStatus());
+			ticket.setType(newTicket.getType());
 			ticket.setCreationDate(newTicket.getCreationDate());
 			ticket.setLastModifiedDate(newTicket.getLastModifiedDate());
 		}
@@ -100,7 +100,7 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 
 	public Ticket getTicket(int id, IProgressMonitor monitor)
 			throws ProjectOpenException {
-		return projectOpenReader.readTicket(httpClient.executeGet("/intranet-rest/im_ticket?format=json&ticket_id="
+		return projectOpenReader.readTicket(httpClient.executeGet("/intranet-rest/im_ticket?format=json&deref_p=1&ticket_id="
                 + id, monitor));
 	}
 
@@ -134,7 +134,7 @@ public class RestfulProjectOpenClient implements ProjectOpenClient {
 
     public List<Ticket> getTickets(IProgressMonitor monitor) throws ProjectOpenException {
         return projectOpenReader.readTickets(
-                httpClient.executeGet("/intranet-rest/im_ticket?format=json", monitor));
+                httpClient.executeGet("/intranet-rest/im_ticket?format=json&deref_p=1", monitor));
     }
 
 	public void updateRepositoryData(boolean force, IProgressMonitor monitor) {

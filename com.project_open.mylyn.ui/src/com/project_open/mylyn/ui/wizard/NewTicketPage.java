@@ -77,7 +77,7 @@ public class NewTicketPage extends WizardPage {
 	
     public Ticket getTicket() {
         Ticket ticket = new Ticket();
-        ticket.setTrackerId(getSelectedTracker().getId());
+        ticket.setTracker(getSelectedTracker());
         ticket.setName(titleText.getText());
         return ticket;    
     }

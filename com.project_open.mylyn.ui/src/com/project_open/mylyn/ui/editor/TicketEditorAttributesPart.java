@@ -1,17 +1,24 @@
 package com.project_open.mylyn.ui.editor;
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -31,7 +38,9 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
 	private Composite parentComposite;
 	private FormToolkit toolkit;
 
+	private Text trackerText;
 	private Text descriptionText;
+    private Combo statusCombo;
 
 	private Ticket ticket;
 	private ProjectOpenClient client;
@@ -61,6 +70,17 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
 
 		expandableComposite.setClient(parentComposite);
 		expandableComposite.setExpanded(true);
+		
+        createAttributeName("Tracker:");
+        trackerText = createTextAttribute();
+        
+        createAttributeName("Status:");
+
+        final ComboViewer comboViewer = new ComboViewer(parentComposite, SWT.BORDER );
+        comboViewer.setContentProvider(new ArrayContentProvider());
+        statusCombo = comboViewer.getCombo();
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(statusCombo);
+        comboViewer.setInput(ProjectOpenUtil.toStringList(client.getClientData().getStates()));
 
 		descriptionText = createMultiTextAttribute("Description:");
 
@@ -127,6 +147,7 @@ public class TicketEditorAttributesPart extends AbstractFormPagePart {
 	}
 
 	public synchronized void setInput(Ticket ticket) {
+		trackerText.setText(ticket.getTracker().getName());
 		descriptionText.setText(ticket.getDescription());
 		headerPart.setSummary(ticket.getName());
 	}
